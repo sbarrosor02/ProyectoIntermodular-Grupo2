@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Residencia IoT + DB</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <!-- ZONA 1: SIMULACIÓN DE HARDWARE (El Mundo Físico) -->
+        <section class="hardware-zone">
+            <h2>🌍 Entorno Físico & Avatar</h2>
+            
+            <div class="scene-container">
+                <!-- FONDO / SUELO -->
+                <div class="floor"></div>
+
+                <!-- AVATAR (PERSONAJE) -->
+                <div id="avatar" class="avatar state-idle">
+                    <div class="head"></div>
+                    <div class="body"></div>
+                    <div class="arms">
+                        <div class="arm left"></div>
+                        <div class="arm right"></div>
+                    </div>
+                    <div class="legs">
+                        <div class="leg left"></div>
+                        <div class="leg right"></div>
+                    </div>
+                </div>
+
+                <div class="hardware-grid">
+                    
+                    <!-- Puerta Física -->
+                    <div class="device-container door-container">
+                        <div class="door-frame">
+                            <div id="phys-door" class="door">
+                                <span class="handle"></span>
+                            </div>
+                        </div>
+                        <!-- Botones movidos abajo -->
+                    </div>
+
+                    <!-- Lector RFID -->
+                    <div class="device-container rfid-container">
+                        <div class="rfid-reader">
+                            <div id="led-rfid" class="led"></div>
+                            <span>RFID</span>
+                        </div>
+                    </div>
+
+                    <!-- Sensor PIR -->
+                    <div class="device-container pir-container">
+                        <div id="phys-pir" class="sensor-pir">
+                            <div class="lens"></div>
+                        </div>
+                        <!-- Rayo láser visual -->
+                        <div id="pir-beam" class="beam hidden"></div>
+                    </div>
+
+                    <!-- Arduino & Buzzer -->
+                    <div class="device-container board-view">
+                        <div class="arduino-board">
+                            <span class="label">R4 WiFi</span>
+                            <div id="matrix-display" class="led-matrix">🔒</div>
+                        </div>
+                        <div id="phys-buzzer" class="buzzer">🔊</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- CONTROLES DE ACCIÓN -->
+            <div class="control-panel">
+                <h3>🎮 Panel de Acciones</h3>
+                <div class="buttons-row">
+                    <button onclick="simDoorToggle()" id="btn-door">🚪 Abrir/Cerrar Puerta</button>
+                    <button onclick="simScanCard()" class="btn-blue">💳 Pasar Tarjeta</button>
+                    <button onclick="simMotion()" class="btn-orange">🏃 Cruzar (PIR)</button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ZONA 2: DASHBOARD DE USUARIO (La Web del Cliente) -->
+        <section class="software-zone">
+            <div class="header-flex">
+                <h2>📱 Dashboard & Database</h2>
+                <button onclick="clearDB()" class="btn-danger btn-small">🗑️ Borrar DB</button>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Tarjetas -->
+                <div class='card'>
+                    <span class='material-icons icon'>meeting_room</span>
+                    <h3>Puerta</h3>
+                    <div id='dash-hall' class='status ok'>CERRADA</div>
+                </div>
+
+                <div class='card'>
+                    <span class='material-icons icon'>directions_run</span>
+                    <h3>PIR</h3>
+                    <div id='dash-pir' class='status ok'>INACTIVO</div>
+                </div>
+
+                <div class='card'>
+                    <span class='material-icons icon'>verified_user</span>
+                    <h3>Acceso</h3>
+                    <div id='dash-auth' class='status alert'>BLOQUEADO</div>
+                </div>
+
+                <!-- Historial -->
+                <div class='card log-card'>
+                    <h3>🗄️ Base de Datos (Persistente)</h3>
+                    <div id='dash-log'>Leyendo DB...</div>
+                </div>
+            </div>
+
+            <div class="json-debug">
+                <h4>📡 API Response (JSON):</h4>
+                <pre id="json-preview">{}</pre>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

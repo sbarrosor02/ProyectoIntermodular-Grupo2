@@ -1,0 +1,110 @@
+:root {
+    --bg-dark: #1e1e2e;
+    --hardware-bg: #2b2b3b;
+    --software-bg: #f4f4f9;
+    --primary: #3498db;
+    --danger: #e74c3c;
+    --skin: #f1c27d;
+    --shirt: #e67e22;
+    --pants: #34495e;
+}
+
+body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-dark); height: 100vh; overflow: hidden; display: flex; justify-content: center; }
+.main-container { display: flex; width: 98%; height: 96vh; margin-top: 2vh; gap: 15px; }
+
+/* --- ZONA HARDWARE (ESCENA) --- */
+.hardware-zone { flex: 1.2; background: var(--hardware-bg); border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; border: 2px solid #555; }
+.scene-container { flex: 1; position: relative; padding: 20px; background: linear-gradient(to bottom, #2b2b3b 80%, #20202a 80%); }
+
+.hardware-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    position: absolute;
+    bottom: 40px; /* Sobre el suelo */
+    width: 90%;
+    left: 5%;
+    z-index: 2; /* Delante del personaje */
+}
+
+/* --- EL AVATAR (PERSONAJE) --- */
+.avatar {
+    position: absolute;
+    bottom: 60px; /* Pisando el suelo */
+    left: 50%;
+    width: 60px;
+    height: 140px;
+    z-index: 1; /* Detrás de los objetos */
+    transition: all 0.5s ease;
+}
+
+/* Partes del cuerpo */
+.head { width: 30px; height: 30px; background: var(--skin); border-radius: 50%; margin: 0 auto; position: relative; z-index: 2; }
+.body { width: 36px; height: 50px; background: var(--shirt); margin: -5px auto 0; border-radius: 5px; position: relative; z-index: 1; }
+.arms { position: absolute; top: 35px; width: 100%; display: flex; justify-content: center; }
+.arm { width: 10px; height: 40px; background: var(--shirt); margin: 0 12px; border-radius: 5px; transform-origin: top; transition: transform 0.3s; }
+.legs { position: absolute; top: 75px; width: 100%; display: flex; justify-content: center; }
+.leg { width: 12px; height: 50px; background: var(--pants); margin: 0 4px; border-radius: 5px; transform-origin: top; transition: transform 0.3s; }
+
+/* ESTADOS DEL AVATAR */
+
+/* 1. IDLE (Quieto) */
+.state-idle { left: 50%; }
+
+/* 2. RFID (Acercándose al lector) */
+.state-rfid { left: 35%; transform: scale(0.95); }
+.state-rfid .arm.right { transform: rotate(-90deg); background: #3498db; } /* Brazo extendido con tarjeta */
+
+/* 3. FORCING (Forzando puerta) */
+.state-forcing { left: 15%; animation: shakePerson 0.2s infinite; }
+.state-forcing .arm.left { transform: rotate(-45deg); }
+.state-forcing .arm.right { transform: rotate(45deg); }
+.state-forcing .head { background: #e74c3c; } /* Cara roja de esfuerzo/miedo */
+
+/* 4. PIR DETECTED (Caminando y detectado) */
+.state-pir { left: 70%; }
+.state-pir .leg.left { animation: walk 0.5s infinite alternate; box-shadow: 0 0 15px red; /* Objetivo sensor */ background: #ffaaaa; }
+.state-pir .leg.right { animation: walk 0.5s infinite alternate-reverse; }
+
+/* Animaciones */
+@keyframes shakePerson { 0% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } 100% { transform: translateX(0); } }
+@keyframes walk { from { transform: rotate(-20deg); } to { transform: rotate(20deg); } }
+
+/* --- OBJETOS --- */
+.device-container { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 8px; text-align: center; color: white; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 120px; }
+
+/* Puerta 3D mejorada */
+.door-frame { width: 60px; height: 100px; background: #444; perspective: 600px; border: 3px solid #222; }
+.door { width: 100%; height: 100%; background: #8e44ad; transform-origin: left; transition: transform 0.5s; position: relative; border: 1px solid #732d91; }
+.door.open { transform: rotateY(-100deg); }
+.handle { width: 8px; height: 8px; background: gold; border-radius: 50%; position: absolute; right: 5px; top: 50%; }
+
+/* PIR Beam */
+.beam { position: absolute; top: 20px; right: -50px; width: 0; height: 2px; background: red; box-shadow: 0 0 10px red; transform: rotate(25deg); transition: width 0.1s; opacity: 0.7; }
+.pir-container { position: relative; }
+
+/* Panel de Control Abajo */
+.control-panel { height: 120px; background: #222; padding: 15px; text-align: center; border-top: 1px solid #555; color: white; }
+.buttons-row { display: flex; gap: 10px; justify-content: center; margin-top: 10px; }
+button { padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; color: white; background: #555; transition: 0.2s; }
+button:hover { transform: scale(1.05); }
+#btn-door { background: #8e44ad; }
+.btn-blue { background: #3498db; }
+.btn-orange { background: #e67e22; }
+.btn-danger { background: #c0392b; }
+.btn-small { font-size: 0.8rem; padding: 5px 10px; }
+
+/* --- ZONA SOFTWARE --- */
+.software-zone { flex: 1; background: var(--software-bg); padding: 20px; overflow-y: auto; }
+.header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.card { background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.status { padding: 5px 12px; border-radius: 15px; font-weight: bold; display: inline-block; margin-top: 5px; }
+.status.ok { background: #d4edda; color: #155724; }
+.status.alert { background: #f8d7da; color: #721c24; }
+.status.auth { background: #cce5ff; color: #004085; }
+
+.log-card { grid-column: 1 / -1; text-align: left; }
+#dash-log { height: 200px; overflow-y: auto; background: #f1f1f1; padding: 10px; font-family: monospace; font-size: 0.85rem; border: 1px solid #ddd; }
+.log-entry { padding: 3px 0; border-bottom: 1px solid #ddd; }
+.json-debug { margin-top: 20px; background: #2c3e50; color: #2ecc71; padding: 15px; border-radius: 8px; font-family: monospace; overflow-x: auto; }
