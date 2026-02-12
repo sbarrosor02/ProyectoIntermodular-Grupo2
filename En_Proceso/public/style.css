@@ -1,0 +1,84 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: #1a73e8;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.status-reposo {
+    border-left: 10px solid #34a853;
+}
+
+.status-detectado {
+    background-color: #fce8e6;
+    border-left: 10px solid #ea4335;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.terminal, .logs {
+    background: #202124;
+    color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    height: 300px;
+    overflow-y: auto;
+}
+
+.logs {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+#serial-output {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #00ff00;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.85em;
+}
+
+li:last-child {
+    border-bottom: none;
+}
