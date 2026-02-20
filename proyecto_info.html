@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residencia IoT - Grupo 2</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background-color: #2c3e50;
+        }
+        .navbar-brand, .nav-link {
+            color: white !important;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .section-padding {
+            padding: 80px 0;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+        }
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 40px 0;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #1abc9c;
+        }
+        .nav-pills .nav-link {
+            color: #2c3e50;
+            background-color: #dee2e6; /* Más oscuro que el fondo bg-light */
+            border: 1px solid #adb5bd;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .nav-pills .nav-link:hover {
+            background-color: #ced4da;
+            color: #2c3e50;
+        }
+        .nav-pills .nav-link.active {
+            background-color: #1abc9c !important;
+            border-color: #16a085;
+            color: white !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">🏠 Residencia IoT</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#inicio">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#que-es">Qué es</a></li>
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#quienes-somos">Quiénes somos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#vision">Misión/Visión</a></li>
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#demostracion">Demostración</a></li>
+                    <li class="nav-item"><a class="nav-link" href="proyecto_info.html#codigo">Detectores (.ino)</a></li>
+                    <li class="nav-item"><a class="nav-link fw-bold text-warning" href="simulador.html">Simulador</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="inicio" class="hero-section">
+        <div class="container">
+            <h1 class="display-3 fw-bold">Seguridad Inteligente al Alcance de Todos</h1>
+            <p class="lead">Proyecto Intermodular - Grupo 2</p>
+            <a href="#que-es" class="btn btn-outline-light btn-lg mt-3">Descubrir más</a>
+        </div>
+    </header>
+
+    <!-- Qué es y qué hace -->
+    <section id="que-es" class="section-padding bg-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-4">¿Qué es y qué hace?</h2>
+                    <p><strong>Residencia IoT</strong> es un sistema integral de seguridad doméstica diseñado para monitorizar en tiempo real la integridad de su hogar. Utilizando tecnología de vanguardia y hardware accesible, nuestro sistema ofrece:</p>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">✅ <strong>Detección de Intrusos:</strong> Sensores PIR de alta sensibilidad.</li>
+                        <li class="list-group-item">✅ <strong>Control de Accesos:</strong> Gestión mediante tecnología RFID (tarjetas y llaveros).</li>
+                        <li class="list-group-item">✅ <strong>Monitorización Remota:</strong> Panel de control web accesible desde cualquier dispositivo.</li>
+                        <li class="list-group-item">✅ <strong>Alertas en Tiempo Real:</strong> Feedback visual en matriz LED y sonoro mediante buzzer.</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="./Smart Home.png" alt="Smart Home" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quiénes somos -->
+    <section id="quienes-somos" class="section-padding bg-light">
+        <div class="container text-center">
+            <h2 class="fw-bold mb-5">Quiénes Somos</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <p class="lead">Somos el <strong>Grupo 2</strong>, un equipo de estudiantes apasionados por la tecnología y la innovación. Este proyecto nace en el marco del programa intermodular, donde hemos unido nuestros conocimientos en electrónica, programación web y redes para crear una solución real a un problema cotidiano.</p>
+                    <p>Creemos en el poder del hardware libre (Open Source) para transformar nuestro entorno y mejorar la seguridad de nuestras comunidades.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Misión, Visión y Proyección -->
+    <section id="vision" class="section-padding bg-white">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 p-4">
+                        <div class="card-body">
+                            <h3 class="fw-bold text-success mb-3">Misión</h3>
+                            <p>Proveer una solución de seguridad IoT robusta, económica y fácil de implementar que permita a cualquier persona proteger su hogar sin depender de costosas cuotas mensuales.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 p-4">
+                        <div class="card-body">
+                            <h3 class="fw-bold text-primary mb-3">Visión</h3>
+                            <p>Ser referentes en el desarrollo de proyectos educativos de IoT, demostrando que la integración de sistemas complejos puede ser intuitiva y altamente eficiente.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 p-4">
+                        <div class="card-body">
+                            <h3 class="fw-bold text-warning mb-3">Proyección</h3>
+                            <p>Aspiramos a escalar este sistema integrando inteligencia artificial para el reconocimiento de patrones y conectividad en la nube para análisis de datos a largo plazo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Código de los Detectores (.ino) -->
+    <section id="demostracion" class="section-padding bg-white">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5">Demostración en Tiempo Real</h2>
+            <p class="text-center mb-4">Observa los logs de tu Arduino en tiempo real y cómo interactúan con la simulación.</p>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-3">Logs del Arduino (Tiempo Real)</h3>
+                    <div id="arduino-log-display" class="code-block" style="height: 300px; overflow-y: scroll; background-color: #282c34; color: #abb2bf;">
+                        <p style="color: #61afef;">Esperando conexión con el servidor de logs...</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-3">Estado del Sistema (Simulado)</h3>
+                    <div class="card p-4">
+                        <p class="lead">Este panel simulará el estado del Sensor PIR y el Buzzer basándose en los logs recibidos.</p>
+                        <div class="d-flex align-items-center mb-3">
+                            <i id="pir-status" class="bi bi-person-fill" style="font-size: 2rem; color: #adb5bd;"></i>
+                            <span class="ms-3 fs-5">Sensor PIR: <strong id="pir-state">Inactivo</strong></span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <i id="buzzer-status" class="bi bi-volume-up-fill" style="font-size: 2rem; color: #adb5bd;"></i>
+                            <span class="ms-3 fs-5">Buzzer: <strong id="buzzer-state">Silencioso</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Código de los Detectores (.ino) -->
+    <script>
+        // WebSocket connection for real-time logs
+        const ws = new WebSocket('ws://localhost:3000'); // Ensure this matches your server port
+        const logDisplay = document.getElementById('arduino-log-display');
+        const pirState = document.getElementById('pir-state');
+        const pirStatusIcon = document.getElementById('pir-status');
+        const buzzerState = document.getElementById('buzzer-state');
+        const buzzerStatusIcon = document.getElementById('buzzer-status');
+
+        ws.onopen = () => {
+            logDisplay.innerHTML = '<p style="color: #98c379;">Conectado al servidor de logs.</p>';
+            console.log('WebSocket Connected');
+        };
+
+        ws.onmessage = event => {
+            const message = event.data;
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logDisplay.appendChild(p);
+            logDisplay.scrollTop = logDisplay.scrollHeight; // Auto-scroll to bottom
+
+            // Update simulated state based on log message
+            if (message.includes('Movimiento detectado')) {
+                pirState.textContent = 'Activo';
+                pirStatusIcon.style.color = '#e5c07b'; // Yellowish color
+                buzzerState.textContent = 'Sonando';
+                buzzerStatusIcon.style.color = '#e06c75'; // Reddish color
+            } else if (message.includes('digitalWrite(pinBuzzer, LOW)')) { // Assuming this is sent when buzzer stops
+                pirState.textContent = 'Inactivo';
+                pirStatusIcon.style.color = '#adb5bd'; // Gray
+                buzzerState.textContent = 'Silencioso';
+                buzzerStatusIcon.style.color = '#adb5bd'; // Gray
+            }
+        };
+
+        ws.onclose = () => {
+            logDisplay.innerHTML += '<p style="color: #e06c75;">Desconectado del servidor de logs. Intenta recargar la página o iniciar el servidor.</p>';
+            console.log('WebSocket Disconnected');
+        };
+
+        ws.onerror = error => {
+            logDisplay.innerHTML += `<p style="color: #e06c75;">Error en WebSocket: ${error.message}</p>`;
+            console.error('WebSocket Error:', error);
+        };
+
+        // Fetch historical logs (optional - requires an API route)
+        // fetch('http://localhost:3000/api/logs')
+        //     .then(response => response.json())
+        //     .then(logs => {
+        //         logs.forEach(log => {
+        //             const p = document.createElement('p');
+        //             p.textContent = `[${new Date(log.timestamp).toLocaleTimeString()}] ${log.message}`;
+        //             logDisplay.prepend(p); // Prepend to show newer logs at bottom, or append
+        //         });
+        //     })
+        //     .catch(error => console.error('Error fetching historical logs:', error));
+            
+    </script>
+
+    <!-- Código de los Detectores (.ino) -->
+    <section id="codigo" class="section-padding bg-light">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5">Nuestros Detectores (.ino)</h2>
+            <p class="text-center mb-4">A continuación, presentamos el corazón de nuestro sistema: el código fuente que da vida a los detectores de movimiento.</p>
+            
+            <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-simple-tab" data-bs-toggle="pill" data-bs-target="#pills-simple" type="button" role="tab">Detector Básico (v1)</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-advanced-tab" data-bs-toggle="pill" data-bs-target="#pills-advanced" type="button" role="tab">Detector IoT (v2)</button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="pills-tabContent">
+                <!-- Detector 1 -->
+                <div class="tab-pane fade show active" id="pills-simple" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h4>dectector.ino</h4>
+                            <p>Versión fundamental diseñada para placas Arduino Uno. Utiliza un sensor PIR y un buzzer para alertas locales inmediatas.</p>
+                            <ul>
+                                <li>Pin PIR: 3</li>
+                                <li>Pin Buzzer: 8</li>
+                                <li>Lógica de interrupción simple</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="code-block">
+<pre>// Pines configurados para PIR y Buzzer
+const int pinPIR = 3;     // Sensor PIR (Activador)
+const int pinBuzzer = 8;  // Buzzer activo (Actuador)
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pinPIR, INPUT);
+  pinMode(pinBuzzer, OUTPUT);
+  Serial.println("Sistema PIR-Buzzer Inicializado");
+}
+
+void loop() {
+  int valorPIR = digitalRead(pinPIR);
+  if (valorPIR == HIGH) {
+    Serial.println("¡Movimiento detectado! -> Activando Buzzer");
+    digitalWrite(pinBuzzer, HIGH);
+    delay(2000);
+  } else {
+    digitalWrite(pinBuzzer, LOW);
+  }
+  delay(100);
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Detector 2 -->
+                <div class="tab-pane fade" id="pills-advanced" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h4>dectector2.ino</h4>
+                            <p>Versión avanzada para <strong>Arduino UNO R4 WiFi</strong>. Incluye sincronización horaria mediante NTP y registro de eventos con fecha y hora.</p>
+                            <ul>
+                                <li>Conectividad WiFi</li>
+                                <li>Sincronización NTP (pool.ntp.org)</li>
+                                <li>Reloj en tiempo real (RTC)</li>
+                                <li>Monitorización serial avanzada</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="code-block">
+<pre>#include "WiFiS3.h"
+#include "RTC.h"
+#include "NTPClient.h"
+#include "WiFiUdp.h"
+#include "arduino_secrets.h"
+
+const int pinPIR = 3;
+const int pinBuzzer = 8;
+
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org", 3600);
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(pinPIR, INPUT);
+  pinMode(pinBuzzer, OUTPUT);
+  
+  WiFi.begin(SECRET_SSID, SECRET_PASS);
+  while (WiFi.status() != WL_CONNECTED) { delay(500); }
+  
+  timeClient.begin();
+  RTC.begin();
+  timeClient.update();
+  RTCTime startTime(timeClient.getEpochTime());
+  RTC.setTime(startTime);
+}
+
+void loop() {
+  timeClient.update();
+  int valorPIR = digitalRead(pinPIR);
+  if (valorPIR == HIGH) {
+    // Lógica con Timestamp...
+    digitalWrite(pinBuzzer, HIGH);
+    delay(2000);
+  } else {
+    digitalWrite(pinBuzzer, LOW);
+  }
+  delay(100);
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p class="mb-2">© 2026 Residencia IoT - Proyecto Intermodular</p>
+            <p class="small">Desarrollado con ❤️ por el Grupo 2</p>
+            <div class="mt-3">
+                <a href="#" class="text-white me-3 text-decoration-none">Documentación</a>
+                <a href="#" class="text-white text-decoration-none">GitHub</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
