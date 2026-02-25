@@ -1,0 +1,9 @@
+# Dependencias Node.js
+node_modules/
+
+# Credenciales (no subir al repositorio)
+arduino_secrets.h
+users.json
+
+# Bases de datos locales
+*.db
