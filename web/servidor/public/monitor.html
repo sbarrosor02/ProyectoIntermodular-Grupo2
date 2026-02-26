@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor IoT — Residencia</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --green: #3fb950;
+      --red: #f85149;
+      --yellow: #d29922;
+      --blue: #58a6ff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* ── CABECERA ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .header h1 { font-size: 1.4rem; font-weight: 600; }
+    .header h1 span { color: var(--blue); }
+
+    .ws-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      transition: all 0.3s;
+    }
+    .ws-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s;
+    }
+    .ws-badge.connected .ws-dot { background: var(--green); animation: blink 2s infinite; }
+    .ws-badge.connected .ws-label { color: var(--green); }
+    .ws-badge.error .ws-dot { background: var(--red); }
+    .ws-badge.error .ws-label { color: var(--red); }
+
+    /* ── TARJETA DE ESTADO PRINCIPAL ── */
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 32px 36px;
+      text-align: center;
+      margin-bottom: 20px;
+      transition: border-color 0.4s, box-shadow 0.4s;
+      position: relative;
+      overflow: hidden;
+    }
+    .status-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .status-card.libre { border-color: var(--green); box-shadow: 0 0 40px rgba(63,185,80,0.08); }
+    .status-card.detectado { border-color: var(--red); box-shadow: 0 0 60px rgba(248,81,73,0.18); animation: flash 0.6s ease; }
+    .status-card.alerta { border-color: var(--yellow); box-shadow: 0 0 50px rgba(210,153,34,0.18); animation: flash-yellow 0.6s ease; }
+
+    @keyframes flash { 0% { background: rgba(248,81,73,0.12); } 100% { background: var(--surface); } }
+    @keyframes flash-yellow { 0% { background: rgba(210,153,34,0.12); } 100% { background: var(--surface); } }
+
+    .status-ring {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      transition: background 0.4s;
+    }
+    .status-ring.libre   { background: rgba(63,185,80,0.14); animation: pulse-green 2.5s ease-in-out infinite; }
+    .status-ring.detectado { background: rgba(248,81,73,0.18); animation: pulse-red 0.9s ease-in-out infinite; }
+    .status-ring.alerta  { background: rgba(210,153,34,0.18); animation: pulse-yellow 1.4s ease-in-out infinite; }
+
+    @keyframes pulse-green  { 0%,100% { box-shadow: 0 0 0 0 rgba(63,185,80,0.4); } 70% { box-shadow: 0 0 0 22px rgba(63,185,80,0); } }
+    @keyframes pulse-red    { 0%,100% { box-shadow: 0 0 0 0 rgba(248,81,73,0.5); } 70% { box-shadow: 0 0 0 28px rgba(248,81,73,0); } }
+    @keyframes pulse-yellow { 0%,100% { box-shadow: 0 0 0 0 rgba(210,153,34,0.4); } 70% { box-shadow: 0 0 0 24px rgba(210,153,34,0); } }
+
+    .status-title { font-size: 2rem; font-weight: 700; margin-bottom: 8px; transition: color 0.4s; }
+    .status-title.libre     { color: var(--green); }
+    .status-title.detectado { color: var(--red); }
+    .status-title.alerta    { color: var(--yellow); }
+
+    .status-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 12px; }
+    .last-time { font-size: 0.82rem; color: var(--muted); }
+    .last-time strong { color: var(--text); }
+
+    /* ── CONTADORES ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2.8rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 6px;
+      transition: transform 0.2s;
+    }
+    .stat-value.bump { animation: bump 0.25s ease; }
+    @keyframes bump { 0%,100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat-icon  { font-size: 1.1rem; margin-bottom: 4px; }
+
+    .stat-card.detections .stat-value { color: var(--red); }
+    .stat-card.alerts     .stat-value { color: var(--yellow); }
+    .stat-card.access     .stat-value { color: var(--blue); }
+
+    /* ── REGISTRO ── */
+    .log-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .log-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .log-header h2 { font-size: 0.82rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 0.05em;
+    }
+    .live-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: blink 1s infinite; }
+
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+    .log-list { max-height: 380px; overflow-y: auto; }
+    .log-list::-webkit-scrollbar { width: 5px; }
+    .log-list::-webkit-scrollbar-track { background: transparent; }
+    .log-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .log-item {
+      display: grid;
+      grid-template-columns: 72px 1fr auto;
+      gap: 12px;
+      padding: 11px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      font-size: 0.85rem;
+      animation: slide-in 0.3s ease;
+    }
+    .log-item:last-child { border-bottom: none; }
+    @keyframes slide-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .log-time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 0.78rem; }
+    .log-msg  { color: var(--text); word-break: break-word; }
+
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .badge.detection { background: rgba(248,81,73,0.15);  color: var(--red); }
+    .badge.alert     { background: rgba(210,153,34,0.15); color: var(--yellow); }
+    .badge.access    { background: rgba(88,166,255,0.15); color: var(--blue); }
+    .badge.clear     { background: rgba(63,185,80,0.15);  color: var(--green); }
+    .badge.log       { background: rgba(139,148,158,0.12); color: var(--muted); }
+
+    .empty-state { padding: 48px; text-align: center; color: var(--muted); font-size: 0.9rem; }
+    .empty-state .icon { font-size: 2rem; margin-bottom: 8px; }
+
+    @media (max-width: 560px) {
+      body { padding: 14px; }
+      .status-title { font-size: 1.5rem; }
+      .stat-value { font-size: 2.2rem; }
+      .log-item { grid-template-columns: 58px 1fr auto; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabecera -->
+  <div class="header">
+    <h1>🏠 Monitor <span>IoT</span> — Residencia</h1>
+    <div class="ws-badge" id="wsBadge">
+      <div class="ws-dot"></div>
+      <span class="ws-label" id="wsLabel">Conectando…</span>
+    </div>
+  </div>
+
+  <!-- Estado principal -->
+  <div class="status-card libre" id="statusCard">
+    <div class="status-ring libre" id="statusRing">🟢</div>
+    <div class="status-title libre" id="statusTitle">ZONA LIBRE</div>
+    <div class="status-sub" id="statusSub">Sin actividad detectada</div>
+    <div class="last-time" id="lastTime">Sin detecciones registradas</div>
+  </div>
+
+  <!-- Contadores -->
+  <div class="stats-grid">
+    <div class="stat-card detections">
+      <div class="stat-icon">🔴</div>
+      <div class="stat-value" id="cntDetections">0</div>
+      <div class="stat-label">Detecciones</div>
+    </div>
+    <div class="stat-card alerts">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-value" id="cntAlerts">0</div>
+      <div class="stat-label">Alertas</div>
+    </div>
+    <div class="stat-card access">
+      <div class="stat-icon">🔑</div>
+      <div class="stat-value" id="cntAccess">0</div>
+      <div class="stat-label">Accesos RFID</div>
+    </div>
+  </div>
+
+  <!-- Registro de eventos -->
+  <div class="log-card">
+    <div class="log-header">
+      <h2>Registro en tiempo real</h2>
+      <div class="live-pill"><div class="dot"></div> EN VIVO</div>
+    </div>
+    <div class="log-list" id="logList">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">📡</div>
+        Esperando datos del Arduino…
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MAX_LOG = 40;
+    const WS_URL = `ws://${window.location.host}`;
+
+    let lastDetectedAt = null;
+    let clearTimer = null;
+    let reconnectTimer = null;
+    let timeUpdateTimer = null;
+
+    // Elementos DOM
+    const wsBadge   = document.getElementById('wsBadge');
+    const wsLabel   = document.getElementById('wsLabel');
+    const statusCard = document.getElementById('statusCard');
+    const statusRing = document.getElementById('statusRing');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusSub  = document.getElementById('statusSub');
+    const lastTime   = document.getElementById('lastTime');
+    const logList    = document.getElementById('logList');
+    const emptyState = document.getElementById('emptyState');
+    const cntDet  = document.getElementById('cntDetections');
+    const cntAlt  = document.getElementById('cntAlerts');
+    const cntAcc  = document.getElementById('cntAccess');
+
+    // ── WebSocket ──────────────────────────────────────────────────
+    function connect() {
+      const ws = new WebSocket(WS_URL);
+
+      ws.onopen = () => {
+        clearTimeout(reconnectTimer);
+        setWs('connected', 'En línea');
+      };
+
+      ws.onmessage = (e) => {
+        try {
+          handleEvent(JSON.parse(e.data));
+        } catch {
+          addLogItem({ type: 'log', message: e.data, timestamp: new Date().toISOString() });
+        }
+      };
+
+      ws.onerror = () => setWs('error', 'Error de conexión');
+      ws.onclose = () => {
+        setWs('error', 'Desconectado');
+        reconnectTimer = setTimeout(connect, 3500);
+      };
+    }
+
+    function setWs(state, label) {
+      wsBadge.className = `ws-badge ${state}`;
+      wsLabel.textContent = label;
+    }
+
+    // ── Manejador de eventos ───────────────────────────────────────
+    function handleEvent(data) {
+      if (data.type === 'welcome') {
+        applyStats(data.stats);
+        // Cargar historial (viene en orden más-reciente-primero, mostramos igual)
+        if (data.stats?.recentEvents?.length) {
+          data.stats.recentEvents.slice().reverse().forEach(ev => addLogItem(ev, false));
+        }
+        return;
+      }
+
+      // Evento nuevo en tiempo real
+      applyStats(data.stats);
+      addLogItem(data, true);
+
+      if (data.type === 'detection') {
+        setStatus('detectado', '🔴', 'MOVIMIENTO DETECTADO', '¡Se ha detectado presencia en la zona!');
+        lastDetectedAt = new Date(data.timestamp);
+        scheduleReset(8000);
+      } else if (data.type === 'alert') {
+        setStatus('alerta', '⚠️', 'ALERTA DE SEGURIDAD', data.message);
+        lastDetectedAt = new Date(data.timestamp);
+        scheduleReset(15000);
+      } else if (data.type === 'clear') {
+        // El Arduino confirma que ya no hay movimiento → reset inmediato
+        clearTimeout(clearTimer);
+        setStatus('libre', '🟢', 'ZONA LIBRE', 'Sin actividad detectada');
+      } else if (data.type === 'access') {
+        // Flash breve sin cambiar estado de seguridad
+        statusCard.classList.add('access-flash');
+        setTimeout(() => statusCard.classList.remove('access-flash'), 800);
+      }
+    }
+
+    function scheduleReset(ms) {
+      clearTimeout(clearTimer);
+      clearTimer = setTimeout(() => setStatus('libre', '🟢', 'ZONA LIBRE', 'Sin actividad detectada'), ms);
+    }
+
+    function setStatus(state, icon, title, sub) {
+      statusCard.className  = `status-card ${state}`;
+      statusRing.className  = `status-ring ${state}`;
+      statusRing.textContent = icon;
+      statusTitle.className  = `status-title ${state}`;
+      statusTitle.textContent = title;
+      statusSub.textContent   = sub;
+    }
+
+    // ── Contadores ────────────────────────────────────────────────
+    function applyStats(s) {
+      if (!s) return;
+      animateCounter(cntDet, s.totalDetections ?? 0);
+      animateCounter(cntAlt, s.totalAlerts ?? 0);
+      animateCounter(cntAcc, s.totalAccess ?? 0);
+      if (s.lastDetected) {
+        lastDetectedAt = new Date(s.lastDetected);
+        updateLastTime();
+      }
+    }
+
+    function animateCounter(el, newVal) {
+      if (el.textContent === String(newVal)) return;
+      el.textContent = newVal;
+      el.classList.remove('bump');
+      void el.offsetWidth; // reflow
+      el.classList.add('bump');
+    }
+
+    function updateLastTime() {
+      if (!lastDetectedAt) return;
+      const sec = Math.floor((Date.now() - lastDetectedAt) / 1000);
+      let txt;
+      if (sec < 5)    txt = 'hace un momento';
+      else if (sec < 60)  txt = `hace ${sec}s`;
+      else if (sec < 3600) txt = `hace ${Math.floor(sec / 60)} min`;
+      else txt = lastDetectedAt.toLocaleTimeString('es-ES');
+      lastTime.innerHTML = `Última detección: <strong>${txt}</strong>`;
+    }
+
+    // Actualiza el "hace X" cada 5 segundos
+    setInterval(updateLastTime, 5000);
+
+    // ── Log de eventos ────────────────────────────────────────────
+    const LABELS = { detection: 'Detección', alert: 'Alerta', access: 'Acceso', clear: 'Libre', log: 'Sistema' };
+
+    function addLogItem(ev, prepend = true) {
+      // Quitar placeholder
+      emptyState?.remove();
+
+      const t = new Date(ev.timestamp).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const div = document.createElement('div');
+      div.className = 'log-item';
+      div.innerHTML = `
+        <span class="log-time">${t}</span>
+        <span class="log-msg">${esc(ev.message)}</span>
+        <span class="badge ${ev.type}">${LABELS[ev.type] ?? 'Log'}</span>
+      `;
+
+      if (prepend) logList.insertBefore(div, logList.firstChild);
+      else         logList.appendChild(div);
+
+      // Límite de entradas visibles
+      const items = logList.querySelectorAll('.log-item');
+      if (items.length > MAX_LOG) items[items.length - 1].remove();
+    }
+
+    function esc(s) {
+      return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // ── Arrancar ──────────────────────────────────────────────────
+    connect();
+  </script>
+</body>
+</html>
